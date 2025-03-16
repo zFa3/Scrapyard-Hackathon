@@ -151,6 +151,9 @@ class KFChess:
             return True
         return False
     
+    def generate_all_plm(self):
+        return self.generate_pseudo_legal_moves(True) + self.generate_pseudo_legal_moves(False)
+    
     def make_illegal_move(self, move: tuple[int, int]) -> None:
         self.board[move[1]] = self.board[move[0]]
         self.board[move[0]] = self.EMPTY
