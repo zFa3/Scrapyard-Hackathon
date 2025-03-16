@@ -1,7 +1,7 @@
 import pygame as p
 import KungFuChess as kfc
 import time as tm
-
+import sys
 import serial
 
 #Open serial communication with Arduino 2 (connected to Computer 2)
@@ -52,7 +52,7 @@ def main():
     while kf_chess.is_game_over():
         for e in p.event.get():
             if e.type == p.QUIT:
-                break
+                sys.exit()
             elif e.type == p.MOUSEBUTTONDOWN:
                 location = p.mouse.get_pos()
                 col = location[0] // square_size
@@ -85,6 +85,7 @@ def main():
             arduino2.flushInput()
             #break
         # recv(send())
+    arduino2.write(b"GAMEOVER\n")
 
 def set_all_pieces_cooldown():
     br = kf_chess.return_board()
@@ -145,6 +146,8 @@ def recv(info: str) -> None:
     times = list(map(float, parsed[1].split(DELIMETER[1])))
 
 def recieve(string: str) -> None:
+    if string == "GAMEOVER":
+        sys.exit()
     global times, kf_chess
     print("recv", string)
     move1, move2 = int(string[:2]), int(string[2:])
