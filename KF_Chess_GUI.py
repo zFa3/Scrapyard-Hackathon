@@ -53,17 +53,34 @@ def main():
                 else:
                     # print(kf_chess.format_move((click, (index)), False))
                     if not kf_chess.make_move(kf_chess.format_move((click, (index)), False), PLAYER):
-                        click = index
+                        if not is_all_pieces_frozen():
+                            if kf_chess.make_move(kf_chess.format_move((click, (index)), False), not PLAYER):
+                                set_all_pieces_cooldown()
+                            else: click = index
+                        else: click = index
                     else:
                         times[index] = tm.perf_counter()
                         click = -1
 
         drawBoard(screen)
-        drawPieces(screen, kf_chess.return_board(), click, [kf_chess.format_index(move[1], True) if kf_chess.format_index(move[0], True) == click else -1 for move in kf_chess.generate_pseudo_legal_moves(PLAYER)])
+        drawPieces(screen, kf_chess.return_board(), click, [kf_chess.format_index(move[1], True) if kf_chess.format_index(move[0], True) == click else -1 for move in kf_chess.generate_all_plm()])
         # clock.tick(max_fps)
         p.display.flip()
         recv(send())
 
+def set_all_pieces_cooldown():
+    br = kf_chess.return_board()
+    for i, t in enumerate(times):
+        if (str(br[i]).isupper() and PLAYER) or (str(br[i]).islower() and not PLAYER):
+            times[i] = tm.perf_counter()
+
+def is_all_pieces_frozen():
+    res = True
+    br = kf_chess.return_board()
+    for i, t in enumerate(times):
+        if (str(br[i]).isupper() and PLAYER) or (str(br[i]).islower() and not PLAYER):
+            res = res and (tm.perf_counter() - times[i] < cooldown)
+    return res
 
 def drawBoard(screen):
     colors = [p.Color("white"), p.Color("gray")]
