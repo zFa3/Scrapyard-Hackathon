@@ -150,6 +150,21 @@ class KFChess:
             if move[0] == 25 and move[1] == 27: self.board[28] = self.EMPTY; self.board[26] = "r"; self.black_castle = [False, False]
             return True
         return False
+    
+    def make_illegal_move(self, move: tuple[int, int]) -> None:
+        self.board[move[1]] = self.board[move[0]]
+        self.board[move[0]] = self.EMPTY
+        
+        self.white_castle[0] = move[0] != 91 and self.white_castle[0]
+        self.white_castle[1] = move[0] != 98 and self.white_castle[1]
+        self.black_castle[0] = move[0] != 21 and self.black_castle[0]
+        self.black_castle[1] = move[0] != 28 and self.black_castle[1]
+        
+        self.white_castle = [move[0] != 95 and self.white_castle[0], move[0] != 95 and self.white_castle[1]]
+        self.black_castle = [move[0] != 25 and self.black_castle[0], move[0] != 25 and self.black_castle[1]]
+        
+        if self.board[move[1]] == "P" and 20 < move[1] < 29: self.board[move[1]] = "Q"
+        if self.board[move[1]] == "p" and 90 < move[1] < 99: self.board[move[1]] = "q"
 
     def format_indicies(self, index: int) -> int:
         row, col = index // 8, index % 8
